@@ -12,7 +12,7 @@ CC = cc
 
 NAME = philo
 
-SRC = prova.c \
+SRC = philo.c \
 	err_check.c \
 	philo_utils.c
 

@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/17 09:22:09 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/17 12:49:16 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,16 @@ void	ft_print(char *str, int time, int id, pthread_mutex_t *print)
 	pthread_mutex_unlock(print);
 }
 
-void      *prova(void *vargp)
+void	*prova(void *vargp)
 {
-	t_philo   *philo;
+	t_philo		*philo;
 	int		eat_time;
 	long long unsigned		last_eat;
 
 	philo = (t_philo *)vargp;
 	eat_time = philo->info->eat_ammount;
-	last_eat = philo->info->conception;
-	while(eat_time && !g_check)
+	last_eat = ft_clock(0);
+	while(eat_time && !philo->death[0])
 	{
 		ft_print("is thinking\n", ft_clock(philo->info->conception), philo->id, philo->info->print);
 		pthread_mutex_lock(philo->right);
@@ -59,28 +59,34 @@ void      *prova(void *vargp)
 		usleep(philo->info->sleep_time);
 		eat_time--;
 	}
+	philo->eat_check[0] += 1;
 	return(0);
 }
 
 void	ft_detach(t_philo *philos)
 {
 	int		i;
+	static int	check;
 
 	i = 0;
-	while(i < philos->info->philo_number)
+	check = 0;
+	while(i < philos->info->philo_number && !check)
 	{
 		pthread_detach(philos[i].philo);
 		i++;
 	}
+	check++;
 }
 
 void	*ft_watcher(void *vargp)
 {
 	t_philo		*philos;
 	int			i;
+	int		count;
 
 	i = 0;
 	philos = (t_philo *)vargp;
+	count = 0;
 	while (1)
 	{
 		i++;
@@ -91,11 +97,13 @@ void	*ft_watcher(void *vargp)
 		{	
 			printf("telapsed was %d, ttd was %d\n", philos[i].telapsed, philos->info->die_time);
 			printf("philo %d is dead, he was killed\n", philos[i].id);
-			g_check = 1;
+			philos[i].death[0]++;
 			ft_detach(philos);
 			break ;
 		}
 		pthread_mutex_unlock(philos->info->clock);
+		if(philos[i].eat_check[0] == philos[i].info->philo_number)
+			break ;
 	}
 	return (NULL);
 }
@@ -142,11 +150,17 @@ void	ft_create_philo(t_info *info)
 	pthread_mutex_t		*mutexes;
 	pthread_t			*philos;
 	pthread_t			observer;
+	int	*eat_time;
+	int	*deaths;
 	int	i;
 
 	i = 0;
 	philo = malloc(sizeof(t_philo) * info->philo_number);
 	mutexes = malloc(sizeof(pthread_mutex_t) * info->philo_number);
+	eat_time = malloc(sizeof(int));
+	deaths = malloc(sizeof(int));
+	eat_time[0] = 0;
+	deaths[0] = 0;
 	while (i < info->philo_number)
 	{
 		pthread_mutex_init(&mutexes[i], NULL);
@@ -161,6 +175,8 @@ void	ft_create_philo(t_info *info)
 		philo[i].id = i;
 		philo[i].info = info;
 		philo[i].philo = philos[i];
+		philo[i].eat_check = eat_time;
+		philo[i].death = deaths;
 		pthread_create(&philo[i].philo, NULL, prova, &philo[i]);
 		i = i + 2;
 	}
@@ -173,14 +189,14 @@ void	ft_create_philo(t_info *info)
 		philo[i].id = i;
 		philo[i].info = info;
 		philo[i].philo = philos[i];
+		philo[i].eat_check = eat_time;
+		philo[i].death = deaths;
 		pthread_create(&philo[i].philo, NULL, prova, &philo[i]);
 		i = i + 2;
 	}
 	pthread_create(&observer, NULL, ft_watcher, philo);
-	i = 0;
-	while(!g_check)
-		usleep(1);
 	pthread_join(observer, NULL);
+	i = 0;
 }
 
 int main(int argc, char **argv)

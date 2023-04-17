@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/14 10:20:41 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/17 12:43:27 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,15 @@ typedef struct  s_info
 
 typedef struct  s_philo
 {
-    t_info  *info;
+    t_info   *info;
     pthread_t    philo;
     int     id;
+    int     *eat_check;
+    int     *death;
     pthread_mutex_t *left;
     pthread_mutex_t *right;
     int     telapsed;
-}t_philo;
+}               t_philo;
 
 int	    ft_atoi(const char *str);
 int	    ft_isdigit(int c);
