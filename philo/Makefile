@@ -22,9 +22,7 @@ TFLAG = -lpthread
 
 all: $(NAME)
 
-$(NAME): comp
-
-comp:
+$(NAME):
 	$(CC) $(FLAGS) $(SRC) $(TFLAG) -o $(NAME)
 	echo "$(TCOL)$(NAME) $(CMP)"
 

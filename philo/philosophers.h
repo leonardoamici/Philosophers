@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/17 12:43:27 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/18 14:28:26 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,14 @@ typedef struct  s_info
     int     eat_ammount;
     int     philo_number;
     unsigned long long   conception;
-    pthread_mutex_t *clock;
-    pthread_mutex_t *print;
 }              t_info;
+
+typedef struct s_mutex
+{
+    pthread_mutex_t		*death;
+	pthread_mutex_t		*print;
+	pthread_mutex_t		*eat;
+}               t_mutex;
 
 typedef struct  s_philo
 {
@@ -39,6 +44,7 @@ typedef struct  s_philo
     int     id;
     int     *eat_check;
     int     *death;
+    t_mutex     *actions;
     pthread_mutex_t *left;
     pthread_mutex_t *right;
     int     telapsed;
