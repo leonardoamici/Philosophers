@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/18 14:28:26 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/20 11:11:51 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_mutex
     pthread_mutex_t		*death;
 	pthread_mutex_t		*print;
 	pthread_mutex_t		*eat;
+    pthread_mutex_t		*clock;
 }               t_mutex;
 
 typedef struct  s_philo

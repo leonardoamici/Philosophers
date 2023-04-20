@@ -5,7 +5,7 @@ CYAN = \e[1;36m
 TCOL = $(CYAN)
 RMD = $(GREEN)successfully $(RED)removed$(NOCOL)
 CMP = $(GREEN)successfully compiled$(NOCOL)
-
+SCMP = $(GREEN)successfully sanitized and compiled$(NOCOL)
 #----------------------------------------------
 
 CC = cc
@@ -18,13 +18,19 @@ SRC = philo.c \
 
 FLAGS = -Wall -Werror -Wextra -g
 
+SFLAGS = -fsanitize=address
+
 TFLAG = -lpthread
 
 all: $(NAME)
 
-$(NAME):
+$(NAME): fclean
 	$(CC) $(FLAGS) $(SRC) $(TFLAG) -o $(NAME)
 	echo "$(TCOL)$(NAME) $(CMP)"
+
+sanitize: 
+	$(CC) $(SFLAGS) $(FLAGS) $(SRC) $(TFLAG) -o $(NAME)
+	echo "$(TCOL)$(NAME) $(SCMP)"
 
 clean:
 
