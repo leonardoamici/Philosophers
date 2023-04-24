@@ -6,37 +6,13 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/20 11:19:04 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/24 09:46:32 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int		g_check = 0;
-
-long long unsigned		ft_clock(long long unsigned otime, pthread_mutex_t *clock)
-{
-	pthread_mutex_lock(clock);
-	struct timeval	time;
-	long long unsigned		x;
-
-	gettimeofday(&time, NULL);
-	x = time.tv_usec - otime;
-	pthread_mutex_unlock(clock);
-	return(x);
-}
-
-void	ft_print(char *str, t_philo *philo)
-{
-	if (!*(philo->death))
-	{
-		pthread_mutex_lock(philo->actions->print);
-		printf("%lld %d %s", ft_clock(philo->info->conception, philo->actions->death), philo->id, str);
-		pthread_mutex_unlock(philo->actions->print);
-	}
-}
-
-void	*prova(void *vargp)
+void	*ft_philos(void *vargp)
 {
 	t_philo		*philo;
 	int		eat_ammount;
@@ -60,11 +36,11 @@ void	*prova(void *vargp)
 			pthread_mutex_unlock(philo->actions->death);
 		}
 		ft_print("is eating\n", philo);
-		usleep(philo->info->eat_time);
+		ft_usleep(philo->info->eat_time);
 		pthread_mutex_unlock(philo->left);
 		pthread_mutex_unlock(philo->right);
 		ft_print("is sleeping\n", philo);
-		usleep(philo->info->sleep_time);
+		ft_usleep(philo->info->sleep_time);
 		eat_ammount--;
 	}
 	if(!eat_ammount)
@@ -74,21 +50,6 @@ void	*prova(void *vargp)
 		pthread_mutex_unlock(philo->actions->eat);
 	}
 	return (0);
-}
-
-void	ft_detach(t_philo *philos)
-{
-	int		i;
-	static int	check;
-
-	i = 0;
-	check = 0;
-	while(i < philos->info->philo_number && !check)
-	{
-		pthread_detach(philos[i].philo);
-		i++;
-	}
-	check++;
 }
 
 void	*ft_watcher(void *vargp)
@@ -129,15 +90,15 @@ void	*ft_watcher(void *vargp)
 t_info	*ft_init_info(int argc, char **argv)
 {
 	t_info	*info;
-	struct timeval	time;
+//	struct timeval	time;
 
 	info = malloc(sizeof(t_info) * 1);
 	info->philo_number = atoi(argv[1]);
 	info->die_time = atoi(argv[2]);
 	info->eat_time = atoi(argv[3]);
 	info->sleep_time = atoi(argv[4]);
-	gettimeofday(&time, NULL);
-	info->conception = time.tv_usec;
+//	gettimeofday(&time, NULL);
+//	info->conception = time.tv_usec;
 	if (argc == 6)
 		info->eat_ammount = atoi(argv[5]);
 	else
@@ -151,11 +112,13 @@ void	 ft_launch_philo(pthread_mutex_t *mutexes, t_philo *philo, int i, t_info *i
 	{
 		philo->left = &mutexes[i];
 		philo->right = &mutexes[0];
+		//printf("gave fork %d and 0\n", i);
 	}
 	else
 	{
 		philo->left = &mutexes[i];
 		philo->right = &mutexes[i + 1];
+		//printf("gave fork %d and %d\n", i, (i + 1));
 	}
 }
 t_mutex		*act_init(void)
@@ -172,21 +135,6 @@ t_mutex		*act_init(void)
 	pthread_mutex_init(actions->print, NULL);
 	pthread_mutex_init(actions->eat, NULL);
 	return (actions);
-}
-
-int		*val_set(int num)
-{
-	int		*temp;
-	int		i;
-
-	temp = malloc(sizeof(int) * num);
-	i = 0;
-	while (i < num)
-	{
-		temp[i] = 0;
-		i++;
-	}
-	return (temp);
 }
 
 void	ft_create_philo(t_info *info)
@@ -222,10 +170,12 @@ void	ft_create_philo(t_info *info)
 		philo[i].actions = actions;
 		i++;
 	}
+	//fclose(stdout);
 	i = 0;
 	while (i < info->philo_number)
 	{
-		pthread_create(&philo[i].philo, NULL, prova, &philo[i]);
+		philo[i].info->conception = ft_clock(0, actions->clock);
+		pthread_create(&philo[i].philo, NULL, ft_philos, &philo[i]);
 		i++;
 	}
 	pthread_create(&observer, NULL, ft_watcher, philo);
