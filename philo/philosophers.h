@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/24 09:35:04 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/24 14:59:57 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ typedef struct  s_info
 {
     int     eat_time;
     int     sleep_time;
-    int     die_time;
+    long long unsigned     die_time;
     int     eat_ammount;
     int     philo_number;
     unsigned long long   conception;
@@ -48,7 +48,7 @@ typedef struct  s_philo
     t_mutex     *actions;
     pthread_mutex_t *left;
     pthread_mutex_t *right;
-    int     telapsed;
+    unsigned long long     telapsed;
 }               t_philo;
 
 int	    ft_atoi(const char *str);
@@ -60,6 +60,8 @@ void	ft_print(char *str, t_philo *philo);
 void	ft_usleep(int time);
 void	ft_detach(t_philo *philos);
 int		*val_set(int num);
-void	*ft_philos(void *vargp);
+void	*ft_philo_even(void *vargp);
+void	*ft_philo_odd(void *vargp);
+void	ft_alt_launch(t_philo *philos);
 
 #endif
