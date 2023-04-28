@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/24 14:59:57 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/28 15:11:36 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,14 @@ int	    ft_atoi(const char *str);
 int	    ft_isdigit(int c);
 int	    ft_error_deal(int ac, char **av);
 void	ft_intset(int **arr, int value, int size);
-long long unsigned		ft_clock(long long unsigned otime, pthread_mutex_t *clock);
+long long unsigned		ft_timer(long long unsigned otime, pthread_mutex_t *clock);
+long long unsigned      ft_clock();
 void	ft_print(char *str, t_philo *philo);
 void	ft_usleep(int time);
+int	    ft_isdead(t_philo *philo);
 void	ft_detach(t_philo *philos);
 int		*val_set(int num);
-void	*ft_philo_even(void *vargp);
-void	*ft_philo_odd(void *vargp);
+void	*ft_philo(void *vargp);
 void	ft_alt_launch(t_philo *philos);
 
 #endif
