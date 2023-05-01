@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
+/*   By: leo <leo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/28 15:11:59 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/01 20:47:52 by leo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,9 @@ void	*ft_philo(void *vargp)
 	
 	philo = (t_philo *)vargp;
 	eat_ammount = philo->info->eat_ammount;
-	while(eat_ammount && !*(philo->death))
+	while(!*(philo->death))
 	{
-		pthread_mutex_lock(philo->left);
-		ft_print("has taken left fork\n", philo);
-		pthread_mutex_lock(philo->right);
-		ft_print("has taken right fork\n", philo);
-		pthread_mutex_lock(philo->actions->death);
-		philo->telapsed = ft_clock();
-		pthread_mutex_unlock(philo->actions->death);
-		ft_print("is eating\n", philo);
-		usleep(1000 * philo->info->eat_time);
-		pthread_mutex_unlock(philo->left);
-		pthread_mutex_unlock(philo->right);
+		ft_eat(philo);
 		if(eat_ammount != -1)
 			eat_ammount--;
 		if(!eat_ammount)
@@ -83,78 +73,21 @@ void	*ft_watcher(void *vargp)
 	return (NULL);
 }
 
-t_info	*ft_init_info(int argc, char **argv)
+void	ft_give_info(pthread_t *philos, t_philo *philo, t_info *info, pthread_mutex_t *mutexes)
 {
-	t_info	*info;
-	//struct timeval	time;
-
-	info = malloc(sizeof(t_info) * 1);
-	info->philo_number = atoi(argv[1]);
-	info->die_time = atoi(argv[2]);
-	info->eat_time = atoi(argv[3]);
-	info->sleep_time = atoi(argv[4]);
-	info->conception = ft_clock();
-	if (argc == 6)
-		info->eat_ammount = atoi(argv[5]);
-	else
-		info->eat_ammount = -1;
-	return (info);
-}
-
-void	 ft_launch_philo(pthread_mutex_t *mutexes, t_philo *philo, int i, t_info *info)
-{
-	if (i == (info->philo_number - 1))
-	{
-		philo->left = &mutexes[i];
-		philo->right = &mutexes[0];
-	}
-	else
-	{
-		philo->left = &mutexes[i];
-		philo->right = &mutexes[i + 1];
-	}
-}
-
-t_mutex		*act_init(void)
-{
-	t_mutex				*actions;
-	
-	actions = malloc(sizeof(t_mutex));
-	actions->death = malloc(sizeof(pthread_mutex_t));
-	actions->clock = malloc(sizeof(pthread_mutex_t));
-	actions->print = malloc(sizeof(pthread_mutex_t));
-	actions->eat = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(actions->death, NULL);
-	pthread_mutex_init(actions->clock, NULL);
-	pthread_mutex_init(actions->print, NULL);
-	pthread_mutex_init(actions->eat, NULL);
-	return (actions);
-}
-
-void	ft_create_philo(t_info *info)
-{
-	t_philo      		*philo;
-	pthread_mutex_t		*mutexes;
-	pthread_t			*philos;
-	pthread_t			observer;
-	t_mutex				*actions;
+	int		i;
+	int		death;
 	int					*eat_time;
-	int					death;
-	int					i;
-
+	t_mutex				*actions;
+	pthread_t			observer;
+	
 	i = 0;
-	actions = act_init();
-	philo = malloc(sizeof(t_philo) * info->philo_number);
-	mutexes = malloc(sizeof(pthread_mutex_t) * info->philo_number);
-	eat_time = val_set(info->philo_number);
 	death = 0;
-	while (i < info->philo_number)
-		pthread_mutex_init(&mutexes[i++], NULL);
-	i = 0;
-	philos = malloc(sizeof(pthread_t) * info->philo_number);
+	actions = act_init();
+	eat_time = val_set(info->philo_number);
 	while (i < info->philo_number)
 	{
-		ft_launch_philo(mutexes, &philo[i], i, info);
+		ft_give_forks(mutexes, &philo[i], i, info);
 		philo[i].telapsed = 0;
 		philo[i].id = i + 1;
 		philo[i].info = info;
@@ -164,16 +97,29 @@ void	ft_create_philo(t_info *info)
 		philo[i].actions = actions;
 		i++;
 	}
-	i = 0;
 	ft_alt_launch(philo);
 	usleep(1000);
 	pthread_create(&observer, NULL, ft_watcher, philo);
-	while(i < info->philo_number)
-	{
-		pthread_join(philo[i].philo, NULL);
-		i++;
-	}
 	pthread_join(observer, NULL);
+}
+
+void	ft_create_philo(t_info *info)
+{
+	t_philo      		*philo;
+	pthread_mutex_t		*mutexes;
+	pthread_t			*philos;
+	int					i;
+
+	i = 0;
+	philo = malloc(sizeof(t_philo) * info->philo_number);
+	mutexes = malloc(sizeof(pthread_mutex_t) * info->philo_number);
+	while (i < info->philo_number)
+		pthread_mutex_init(&mutexes[i++], NULL);
+	philos = malloc(sizeof(pthread_t) * info->philo_number);
+	if(info->philo_number > 1 && info->philo_number)
+		ft_give_info(philos, philo, info, mutexes);
+	else if (info->philo_number == 1)
+		
 }
 
 int main(int argc, char **argv)
@@ -185,19 +131,13 @@ int main(int argc, char **argv)
 	if (argc == 6)
 		check = 1;
 	if (argc < 5 || argc > 6)
-	{
-		printf("Error\n");
-		return (1);
-	}
+		return (printf("Error\n") * 0 + 1);
 	else if (!ft_error_deal(4 + check, argv + 1))
 	{
 		info = ft_init_info(argc, argv);
 		ft_create_philo(info);
 	}
 	else
-	{
-		printf("Error\n");
-		return (1);
-	}
+		return (printf("Error\n") * 0 + 2);
 	return (0);
 }

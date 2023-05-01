@@ -15,7 +15,9 @@ NAME = philo
 SRC = philo.c \
 	err_check.c \
 	philo_utils.c \
-	utils.c
+	philo_utils2.c \
+	utils.c \
+	action_utils.c
 
 FLAGS = -Wall -Werror -Wextra -g
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
+/*   By: leo <leo@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/28 15:11:36 by lamici           ###   ########.fr       */
+/*   Updated: 2023/04/30 22:51:04 by leo              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,9 @@ void	ft_detach(t_philo *philos);
 int		*val_set(int num);
 void	*ft_philo(void *vargp);
 void	ft_alt_launch(t_philo *philos);
+void	 ft_give_forks(pthread_mutex_t *mutexes, t_philo *philo, int i, t_info *info);
+t_mutex		*act_init(void);
+t_info	*ft_init_info(int argc, char **argv);
+void    ft_eat(t_philo *philo);
 
 #endif
