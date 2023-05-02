@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_utils2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: leo <leo@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 15:04:12 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/30 22:46:51 by leo              ###   ########.fr       */
+/*   Updated: 2023/05/02 15:37:41 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,19 @@ void	ft_alt_launch(t_philo *philos)
 	int		i;
 
 	i = 0;
-	while(i < philos->info->philo_number)
+	if (philos->info->philo_number == 1)
 	{
-		if(philos[i].id % 2 == 0)
-			usleep(1000);
-		pthread_create(&philos[i].philo, NULL, ft_philo, &philos[i]);
-		i++;
+		pthread_create(&philos[i].philo, NULL, ft_lonely_boy, &philos[i]);
+	}
+	else
+	{
+		while (i < philos->info->philo_number && philos->info->philo_number != 1)
+		{
+			if (philos[i].id % 2 == 0)
+				usleep(1000);
+			pthread_create(&philos[i].philo, NULL, ft_philo, &philos[i]);
+			i++;
+		}
 	}
 }
 

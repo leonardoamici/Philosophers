@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: leo <leo@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 15:57:16 by lamici            #+#    #+#             */
-/*   Updated: 2023/04/30 22:51:04 by leo              ###   ########.fr       */
+/*   Updated: 2023/05/02 15:45:07 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct s_mutex
     pthread_mutex_t		*death;
 	pthread_mutex_t		*print;
 	pthread_mutex_t		*eat;
-    pthread_mutex_t		*clock;
+    pthread_mutex_t	    *clock;
 }               t_mutex;
 
 typedef struct  s_philo
@@ -43,7 +43,7 @@ typedef struct  s_philo
     t_info   *info;
     pthread_t    philo;
     int     id;
-    int     *eat_check;
+    int     eat_check;
     int     *death;
     t_mutex     *actions;
     pthread_mutex_t *left;
@@ -68,5 +68,8 @@ void	 ft_give_forks(pthread_mutex_t *mutexes, t_philo *philo, int i, t_info *inf
 t_mutex		*act_init(void);
 t_info	*ft_init_info(int argc, char **argv);
 void    ft_eat(t_philo *philo);
+void	*ft_lonely_boy(void *args);
+void	ft_kill_philo(t_philo *philos);
+void	ft_kill_mutex(t_philo *philos, pthread_mutex_t *mutexes);
 
 #endif

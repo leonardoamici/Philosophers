@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   action_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: leo <leo@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/30 22:47:43 by leo               #+#    #+#             */
-/*   Updated: 2023/05/01 20:42:10 by leo              ###   ########.fr       */
+/*   Created: 2023/04/30 22:47:43 by lamici            #+#    #+#             */
+/*   Updated: 2023/05/02 15:50:52 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,21 +27,58 @@ void    ft_eat(t_philo *philo)
 	pthread_mutex_unlock(philo->right);
 }
 
-void	lonely_boy(void *args)
+void	*ft_lonely_boy(void *args)
 {
 	t_philo		*philo;
 	int		eat_ammount;
 	
-	philo = (t_philo *)vargp;
+	philo = (t_philo *)args;
 	eat_ammount = philo->info->eat_ammount;
 	if(eat_ammount != 0)
 	{
 		ft_print("boy i sure am hungry\n", philo);
 		ft_print("looks like i only own a singular fork\n", philo);
+		pthread_mutex_lock(philo->actions->death);
+		philo->telapsed = ft_clock();
+		pthread_mutex_unlock(philo->actions->death);
 		usleep(1000 * philo->info->eat_time);
-		ft_print("dies of cringe\n", philo);
 	}
 	else
 		ft_print("no need to eat im already full of knowledge\n", philo);
+	return NULL;
+}
 
+void	ft_kill_philo(t_philo *philos)
+{
+	int		i;
+
+	i = 0;
+	while(i < philos->info->philo_number)
+	{
+		pthread_join(philos[i].philo, NULL);
+		i++;
+	}
+}
+
+void	ft_kill_mutex(t_philo *philos, pthread_mutex_t *mutexes)
+{
+	int		i;
+
+	i = 0;
+	while(i < philos->info->philo_number)
+	{
+		pthread_mutex_destroy(&mutexes[i]);
+		i++;
+	}
+	pthread_mutex_destroy(philos->actions->clock);
+	pthread_mutex_destroy(philos->actions->print);
+	pthread_mutex_destroy(philos->actions->death);
+	pthread_mutex_destroy(philos->actions->eat);
+	free(philos->actions->clock);
+	free(philos->actions->print);
+	free(philos->actions->death);
+	free(philos->actions->eat);
+	free(philos->actions);
+	free(philos->info);
+	free(philos);
 }
