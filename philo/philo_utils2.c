@@ -23,7 +23,8 @@ void	ft_alt_launch(t_philo *philos)
 	}
 	else
 	{
-		while (i < philos->info->philo_number && philos->info->philo_number != 1)
+		while (i < philos->info->philo_number && \
+			philos->info->philo_number != 1)
 		{
 			if (philos[i].id % 2 == 0)
 				usleep(1000);
@@ -33,8 +34,11 @@ void	ft_alt_launch(t_philo *philos)
 	}
 }
 
-void	 ft_give_forks(pthread_mutex_t *mutexes, t_philo *philo, int i, t_info *info)
+void	ft_give_forks(pthread_mutex_t *mutexes, t_philo *philo, t_info *info)
 {
+	int	i;
+
+	i = philo->id - 1;
 	if (i == (info->philo_number - 1))
 	{
 		philo->left = &mutexes[i];
@@ -64,10 +68,10 @@ t_info	*ft_init_info(int argc, char **argv)
 	return (info);
 }
 
-t_mutex		*act_init(void)
+t_mutex	*act_init(void)
 {
 	t_mutex				*actions;
-	
+
 	actions = malloc(sizeof(t_mutex));
 	actions->death = malloc(sizeof(pthread_mutex_t));
 	actions->clock = malloc(sizeof(pthread_mutex_t));

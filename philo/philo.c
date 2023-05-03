@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/02 15:55:09 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/03 10:45:19 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,22 @@
 void	*ft_philo(void *vargp)
 {
 	t_philo		*philo;
-	int		eat_ammount;
-	
+	int			eat_ammount;
+
 	philo = (t_philo *)vargp;
 	eat_ammount = philo->info->eat_ammount;
-	while(!*(philo->death) && eat_ammount)
+	while (!ft_isdead(philo) && eat_ammount)
 	{
 		ft_eat(philo);
-		if(eat_ammount != -1)
+		if (eat_ammount != -1)
 			eat_ammount--;
-		if(!eat_ammount)
+		if (!eat_ammount)
 			break ;
 		ft_print("is sleeping\n", philo);
 		usleep(1000 * philo->info->sleep_time);
 		ft_print("is thinking\n", philo);
 	}
-	if(!eat_ammount)
+	if (!eat_ammount)
 	{
 		pthread_mutex_lock(philo->actions->eat);
 		philo->eat_check = 1;
@@ -41,61 +41,36 @@ void	*ft_philo(void *vargp)
 
 void	*ft_watcher(void *vargp)
 {
-	t_philo		*philos;
-	int			i;
-	int		count;
+	t_philo				*philos;
+	static int			i;
 
-	i = 0;
 	philos = (t_philo *)vargp;
-	count = 0;
-	while (1)
+	while (!ft_eat_check(philos, i))
 	{
 		i++;
 		if (i == philos->info->philo_number)
 			i = 0;
-		pthread_mutex_lock(philos[i].actions->death);
-		if ((ft_timer( philos[i].telapsed, philos[i].actions->clock) > philos[i].info->die_time) && philos[i].telapsed && !(philos[count]).eat_check)
+		pthread_mutex_lock(philos[i].actions->eat);
+		if ((ft_timer(philos[i].telapsed, philos[i].actions->clock) > \
+			philos[i].info->die_time) && \
+				philos[i].telapsed && !(philos[i]).eat_check)
 		{
-			pthread_mutex_lock(philos[i].actions->print);
-			printf("%llu %d has died", ft_timer(philos[i].info->conception, philos[i].actions->clock), philos[i].id);
+			ft_print("has died\n", &philos[i]);
+			pthread_mutex_lock(philos[i].actions->death);
 			*philos[i].death = 1;
-			pthread_mutex_unlock(philos[i].actions->print);
 			pthread_mutex_unlock(philos[i].actions->death);
+			pthread_mutex_unlock(philos[i].actions->eat);
 			break ;
 		}
-		pthread_mutex_unlock(philos[i].actions->death);
-		pthread_mutex_lock(philos[i].actions->eat);
-		if((philos[count]).eat_check)
-			count++;
-		if(count == philos[i].info->philo_number)
-			break;
 		pthread_mutex_unlock(philos[i].actions->eat);
 	}
 	return (NULL);
 }
 
-void	ft_give_info(pthread_t *philos, t_philo *philo, t_info *info, pthread_mutex_t *mutexes)
+void	ft_start_threads(t_philo *philo, pthread_mutex_t *mutexes)
 {
-	int		i;
-	int		death;
-	t_mutex				*actions;
 	pthread_t			observer;
-	
-	i = 0;
-	death = 0;
-	actions = act_init();
-	while (i < info->philo_number)
-	{
-		ft_give_forks(mutexes, &philo[i], i, info);
-		philo[i].telapsed = 0;
-		philo[i].id = i + 1;
-		philo[i].info = info;
-		philo[i].philo = philos[i];
-		philo[i].eat_check = 0;
-		philo[i].death = &death;
-		philo[i].actions = actions;
-		i++;
-	}
+
 	ft_alt_launch(philo);
 	usleep(1000);
 	pthread_create(&observer, NULL, ft_watcher, philo);
@@ -104,26 +79,32 @@ void	ft_give_info(pthread_t *philos, t_philo *philo, t_info *info, pthread_mutex
 	ft_kill_mutex(philo, mutexes);
 }
 
-void	ft_create_philo(t_info *info)
+void	ft_give_info(pthread_t *philos, t_philo *philo, \
+			t_info *info, pthread_mutex_t *mutexes)
 {
-	t_philo      		*philo;
-	pthread_mutex_t		*mutexes;
-	pthread_t			*philos;
 	int					i;
+	int					death;
+	t_mutex				*actions;
 
 	i = 0;
-	philo = malloc(sizeof(t_philo) * info->philo_number);
-	mutexes = malloc(sizeof(pthread_mutex_t) * info->philo_number);
+	death = 0;
+	actions = act_init();
 	while (i < info->philo_number)
-		pthread_mutex_init(&mutexes[i++], NULL);
-	philos = malloc(sizeof(pthread_t) * info->philo_number);
-	if(info->philo_number > 0)
-		ft_give_info(philos, philo, info, mutexes);
-	free(philos);
-	free(mutexes);
+	{
+		philo[i].id = i + 1;
+		ft_give_forks(mutexes, &philo[i], info);
+		philo[i].telapsed = 0;
+		philo[i].info = info;
+		philo[i].philo = philos[i];
+		philo[i].eat_check = 0;
+		philo[i].death = &death;
+		philo[i].actions = actions;
+		i++;
+	}
+	ft_start_threads(philo, mutexes);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_info	*info;
 	int		check;

@@ -45,7 +45,7 @@ int	ft_atoi(const char *str)
 	return (res * sign);
 }
 
-int		*val_set(int num)
+int	*val_set(int num)
 {
 	int		*temp;
 	int		i;
