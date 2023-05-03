@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/30 22:47:43 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/03 10:48:16 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/03 16:13:45 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,27 @@
 
 void	ft_eat(t_philo *philo)
 {
-	if (philo->left > philo->right)
-	{
-		pthread_mutex_lock(philo->left);
-		ft_print("has taken left fork\n", philo);
-		pthread_mutex_lock(philo->right);
-		ft_print("has taken right fork\n", philo);
-	}
 	if (philo->right > philo->left)
 	{
+		//printf("i am philo %d, i went first option\n", philo->id);
+		ft_print("has taken left fork\n", philo);
+		pthread_mutex_lock(philo->left);
+		ft_print("has taken left fork\n", philo);
+		pthread_mutex_lock(philo->right);
+		ft_print("has taken right fork\n", philo);
+	}
+	else if (philo->left > philo->right)
+	{
+		//printf("i am philo %d, i went second option\n", philo->id);
 		pthread_mutex_lock(philo->right);
 		ft_print("has taken right fork\n", philo);
 		pthread_mutex_lock(philo->left);
 		ft_print("has taken left fork\n", philo);
 	}
+	ft_print("is eating\n", philo);
 	pthread_mutex_lock(philo->actions->eat);
 	philo->telapsed = ft_clock();
 	pthread_mutex_unlock(philo->actions->eat);
-	ft_print("is eating\n", philo);
 	usleep(1000 * philo->info->eat_time);
 	pthread_mutex_unlock(philo->left);
 	pthread_mutex_unlock(philo->right);
