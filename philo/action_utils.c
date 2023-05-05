@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/30 22:47:43 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/03 16:13:45 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/05 12:15:33 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 void	ft_eat(t_philo *philo)
 {
+	if (philo->id == philo->info->philo_number)
+		usleep(1000);
 	if (philo->right > philo->left)
 	{
-		//printf("i am philo %d, i went first option\n", philo->id);
 		ft_print("has taken left fork\n", philo);
 		pthread_mutex_lock(philo->left);
 		ft_print("has taken left fork\n", philo);
@@ -25,7 +26,6 @@ void	ft_eat(t_philo *philo)
 	}
 	else if (philo->left > philo->right)
 	{
-		//printf("i am philo %d, i went second option\n", philo->id);
 		pthread_mutex_lock(philo->right);
 		ft_print("has taken right fork\n", philo);
 		pthread_mutex_lock(philo->left);
@@ -51,9 +51,9 @@ void	*ft_lonely_boy(void *args)
 	{
 		ft_print("boy i sure am hungry\n", philo);
 		ft_print("looks like i only own a singular fork\n", philo);
-		pthread_mutex_lock(philo->actions->death);
+		pthread_mutex_lock(philo->actions->eat);
 		philo->telapsed = ft_clock();
-		pthread_mutex_unlock(philo->actions->death);
+		pthread_mutex_unlock(philo->actions->eat);
 		usleep(1000 * philo->info->eat_time);
 	}
 	else

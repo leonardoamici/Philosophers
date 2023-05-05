@@ -19,6 +19,8 @@ SRC = philo.c \
 	utils.c \
 	action_utils.c
 
+OBJ = $(SRC:.c=.o)
+
 FLAGS = -Wall -Werror -Wextra -g
 
 SFLAGS = -fsanitize=address
@@ -27,8 +29,8 @@ TFLAG = -lpthread
 
 all: $(NAME)
 
-$(NAME): fclean
-	$(CC) $(FLAGS) $(SRC) $(TFLAG) -o $(NAME)
+$(NAME): fclean $(OBJ)
+	$(CC) $(FLAGS) $(OBJ) $(TFLAG) -o $(NAME)
 	echo "$(TCOL)$(NAME) $(CMP)"
 
 sanitize: 
@@ -36,6 +38,7 @@ sanitize:
 	echo "$(TCOL)$(NAME) $(SCMP)"
 
 clean:
+	rm -rf $(OBJ)
 
 fclean: clean
 		if [ -f $(NAME) ]; then\

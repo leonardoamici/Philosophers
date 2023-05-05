@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 15:04:12 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/03 16:26:59 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/05 10:39:49 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_alt_launch(t_philo *philos)
 			philos->info->philo_number != 1)
 		{
 			pthread_create(&philos[i].philo, NULL, ft_philo, &philos[i]);
-			if (i % 2 == 0 && i + 1 != philos->info->philo_number)
+			if (i % 2 == 0)
 				usleep(1000);
 			i++;
 		}

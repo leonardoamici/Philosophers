@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/03 16:01:10 by lamici           ###   ########.fr       */
+/*   Updated: 2023/05/05 11:51:34 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	*ft_watcher(void *vargp)
 	static int			i;
 
 	philos = (t_philo *)vargp;
-	while (!ft_eat_check(philos, i))
+	while (!ft_eat_check(philos, i) && philos->info->eat_ammount)
 	{
 		i++;
 		if (i == philos->info->philo_number)
