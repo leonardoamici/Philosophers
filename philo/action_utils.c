@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/30 22:47:43 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/05 12:15:33 by lamici           ###   ########.fr       */
+/*   Updated: 2024/01/23 11:43:20 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void	ft_eat(t_philo *philo)
 		usleep(1000);
 	if (philo->right > philo->left)
 	{
-		ft_print("has taken left fork\n", philo);
 		pthread_mutex_lock(philo->left);
 		ft_print("has taken left fork\n", philo);
 		pthread_mutex_lock(philo->right);

@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 15:04:12 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/05 10:39:49 by lamici           ###   ########.fr       */
+/*   Updated: 2024/01/23 11:43:51 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ t_info	*ft_init_info(int argc, char **argv)
 	t_info	*info;
 
 	info = malloc(sizeof(t_info) * 1);
-	info->philo_number = atoi(argv[1]);
-	info->die_time = atoi(argv[2]);
-	info->eat_time = atoi(argv[3]);
-	info->sleep_time = atoi(argv[4]);
+	info->philo_number = ft_atoi(argv[1]);
+	info->die_time = ft_atoi(argv[2]);
+	info->eat_time = ft_atoi(argv[3]);
+	info->sleep_time = ft_atoi(argv[4]);
 	info->conception = ft_clock();
 	if (argc == 6)
-		info->eat_ammount = atoi(argv[5]);
+		info->eat_ammount = ft_atoi(argv[5]);
 	else
 		info->eat_ammount = -1;
 	return (info);

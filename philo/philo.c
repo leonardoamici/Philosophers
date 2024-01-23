@@ -6,7 +6,7 @@
 /*   By: lamici <lamici@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 09:55:24 by lamici            #+#    #+#             */
-/*   Updated: 2023/05/05 11:51:34 by lamici           ###   ########.fr       */
+/*   Updated: 2024/01/23 11:45:10 by lamici           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	*ft_philo(void *vargp)
 	return (0);
 }	
 
-void	*ft_watcher(void *vargp)
+static void	*ft_watcher(void *vargp)
 {
 	t_philo				*philos;
 	static int			i;
@@ -48,6 +48,7 @@ void	*ft_watcher(void *vargp)
 	while (!ft_eat_check(philos, i) && philos->info->eat_ammount)
 	{
 		i++;
+		usleep(100);
 		if (i == philos->info->philo_number)
 			i = 0;
 		pthread_mutex_lock(philos[i].actions->eat);
@@ -67,7 +68,7 @@ void	*ft_watcher(void *vargp)
 	return (NULL);
 }
 
-void	ft_start_threads(t_philo *philo, pthread_mutex_t *mutexes)
+static void	ft_start_threads(t_philo *philo, pthread_mutex_t *mutexes)
 {
 	pthread_t			observer;
 

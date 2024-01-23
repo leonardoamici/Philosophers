@@ -29,7 +29,7 @@ TFLAG = -lpthread
 
 all: $(NAME)
 
-$(NAME): fclean $(OBJ)
+$(NAME): $(OBJ)
 	$(CC) $(FLAGS) $(OBJ) $(TFLAG) -o $(NAME)
 	echo "$(TCOL)$(NAME) $(CMP)"
 
@@ -51,3 +51,4 @@ re: fclean all
 .PHONY: all re clean fclean
 
 .SILENT:
+
